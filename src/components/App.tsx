@@ -13,14 +13,7 @@ class App extends React.Component<AppProps, AppState> {
       type: Phaser.AUTO,
       scene: [MainScene],
       width: 800,
-      height: 600,
-      physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
-        }
-      }
+      height: 600
     })
   }
 
