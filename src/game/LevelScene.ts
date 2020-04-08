@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
 import {Level} from './Level';
+import {GameText, TextTerm} from './GameText'
 
 class LevelScene extends Phaser.Scene {
   tiles: Phaser.GameObjects.Group
   level: Level
   key: string
+  gameText: GameText
   currentMap: integer[][]
   blackFrame: integer
   whiteFrame: integer
@@ -14,10 +16,11 @@ class LevelScene extends Phaser.Scene {
   renderAtX: integer
   renderAtY: integer
   completed: boolean
-  constructor(level: Level) {
+  constructor(level: Level, gameText: GameText ) {
     super({key: "level" + level.name});
     this.key = "level" + level.name
     this.level = level
+    this.gameText = gameText
   }
 
   preload ()
@@ -59,7 +62,7 @@ class LevelScene extends Phaser.Scene {
       });  
     });
 
-    this.add.text(32, 32, "Level "+this.level.name, { fontFamily: '"Roboto Condensed"', fontSize: "16px" }), 
+    this.add.text(32, 32, this.gameText.text(TextTerm.Level) +" "+this.level.name, { fontFamily: '"Roboto Condensed"', fontSize: "16px" }), 
 
     this.tiles = adder.group({
       key: 'tiles',

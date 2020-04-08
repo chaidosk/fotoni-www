@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
 import {Level} from './Level';
 import LevelScene from './LevelScene';
+import {GameText, Language } from './GameText'
 
 class MainScene extends Phaser.Scene {
   levels: Level[]
   currentLevelScene: LevelScene
   currentLevelIndex: integer
   onCompleteRegistered: boolean
+  gameText: GameText
   constructor() {
     super('MainScene');
     Phaser.Scene.call(this);
@@ -31,11 +33,12 @@ class MainScene extends Phaser.Scene {
       ]),
     ];
     this.currentLevelIndex = 0
+    this.gameText = new GameText(Language.GREEK)
   }
 
   create ()
   {
-    this.currentLevelScene = new LevelScene(this.levels[0]);
+    this.currentLevelScene = new LevelScene(this.levels[0], this.gameText);
     this.scene.add(this.currentLevelScene.key, this.currentLevelScene, true);
     this.onCompleteRegistered = false;
   }
@@ -47,7 +50,7 @@ class MainScene extends Phaser.Scene {
 
     this.currentLevelIndex += 1
     this.currentLevelIndex = this.currentLevelIndex % this.levels.length;
-    this.currentLevelScene = new LevelScene(this.levels[this.currentLevelIndex])
+    this.currentLevelScene = new LevelScene(this.levels[this.currentLevelIndex], this.gameText)
     this.scene.add(this.currentLevelScene.key, this.currentLevelScene, true);
     this.onCompleteRegistered = false
   }
