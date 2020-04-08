@@ -2,13 +2,17 @@ import Phaser from 'phaser';
 import {Level} from './Level';
 import LevelScene from './LevelScene';
 import {GameText, Language } from './GameText'
+import LanguageSelectionScene from './LanguageSelectionScene';
 
 class MainScene extends Phaser.Scene {
   levels: Level[]
+  languageSelectionScene: LanguageSelectionScene
   currentLevelScene: LevelScene
   currentLevelIndex: integer
   onCompleteRegistered: boolean
+  onLanguageSelectedRegistered: boolean
   gameText: GameText
+  languageSelected: boolean
   constructor() {
     super('MainScene');
     Phaser.Scene.call(this);
@@ -33,14 +37,17 @@ class MainScene extends Phaser.Scene {
       ]),
     ];
     this.currentLevelIndex = 0
+    this.languageSelected = false
+    this.onCompleteRegistered = false
+    this.onLanguageSelectedRegistered = false
     this.gameText = new GameText(Language.GREEK)
   }
 
   create ()
   {
-    this.currentLevelScene = new LevelScene(this.levels[0], this.gameText);
-    this.scene.add(this.currentLevelScene.key, this.currentLevelScene, true);
-    this.onCompleteRegistered = false;
+    this.languageSelectionScene = new LanguageSelectionScene()
+    this.scene.add(this.languageSelectionScene.key, this.languageSelectionScene, true)
+    this.onLanguageSelectedRegistered = false
   }
 
   onLevelCompleted() {
@@ -55,11 +62,27 @@ class MainScene extends Phaser.Scene {
     this.onCompleteRegistered = false
   }
 
+  onLanguageSelected(language: Language) {
+    this.gameText = new GameText(language)
+    this.scene.stop(this.languageSelectionScene.key)
+    this.scene.remove(this.languageSelectionScene.key)
+    this.languageSelectionScene.events.removeAllListeners("languageSelected")
+    
+
+    this.currentLevelScene = new LevelScene(this.levels[0], this.gameText);
+    this.scene.add(this.currentLevelScene.key, this.currentLevelScene, true);
+    this.onCompleteRegistered = false;
+  }
+
   update ()
   {
-    if (! this.onCompleteRegistered && this.currentLevelScene.events) {
+    if (!this.onLanguageSelectedRegistered && this.languageSelectionScene && this.languageSelectionScene.events) {
+      this.languageSelectionScene.events.on("languageSelected", this.onLanguageSelected, this)
+      this.onLanguageSelectedRegistered = true
+    }
+    if (!this.onCompleteRegistered && this.currentLevelScene && this.currentLevelScene.events) {
       this.currentLevelScene.events.on("completed", this.onLevelCompleted, this)
-      this.onCompleteRegistered = true;
+      this.onCompleteRegistered = true
     }
     
   }
