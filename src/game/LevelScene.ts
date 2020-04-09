@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import {Level} from './Level';
-import {GameText, TextTerm} from './GameText'
+import { GameText, TextTerm } from './GameText';
+import { Level } from './Level';
 
 class LevelScene extends Phaser.Scene {
   tiles: Phaser.GameObjects.Group
@@ -16,67 +16,67 @@ class LevelScene extends Phaser.Scene {
   renderAtX: integer
   renderAtY: integer
   completed: boolean
-  constructor(level: Level, gameText: GameText ) {
-    super({key: "level" + level.name});
+  constructor(level: Level, gameText: GameText) {
+    super({ key: "level" + level.name });
     this.key = "level" + level.name
     this.level = level
     this.gameText = gameText
   }
 
-  preload ()
-  {
+  preload() {
     this.whiteFrame = 41
     this.blackFrame = 14
     this.crossFrame = 98
     this.cellHeight = 32
     this.cellWidth = 32
-    this.load.spritesheet('tiles', 'assets/gridtiles.png', { frameWidth: this.cellWidth, frameHeight: this.cellHeight });
+    this.load.spritesheet('tiles', 'assets/gridtiles.png',
+                          { frameWidth: this.cellWidth, frameHeight: this.cellHeight });
     this.renderAtX = (Math.ceil(this.level.width / 2) + 2) * this.cellWidth // Allow helping text + 2
     this.renderAtY = (Math.ceil(this.level.height / 2) + 2) * this.cellHeight // Allow helping text + 2
     this.completed = false
   }
 
-  create ()
-  {
+  create() {
     this.currentMap = []
     this.level.map.forEach(element => {
       this.currentMap.push(Array(this.level.width).fill(0))
     });
     // for typescript linting
-    var adder : any = this.add
+    const adder: any = this.add
 
     this.level.aboveHelper.forEach((element, xIndex) => {
       element.reverse().forEach((value, yIndex) => {
-        this.add.text(this.renderAtX + (xIndex * this.cellWidth) , 
-                    this.renderAtY - ((yIndex +1 ) * this.cellHeight), 
-                    "" + value, 
-                    { fontFamily: '"Roboto Condensed"', fontSize: "16px" });
-      });  
+        this.add.text(this.renderAtX + (xIndex * this.cellWidth),
+                      this.renderAtY - ((yIndex + 1) * this.cellHeight),
+                      "" + value,
+                      { fontFamily: '"Roboto Condensed"', fontSize: "16px" });
+      });
     });
     this.level.sideHelper.forEach((element, yIndex) => {
       element.reverse().forEach((value, xIndex) => {
-        this.add.text(this.renderAtX - ((xIndex + 1 ) * this.cellWidth),
-                      this.renderAtY + (yIndex * this.cellHeight), 
-                      "" + value, 
+        this.add.text(this.renderAtX - ((xIndex + 1) * this.cellWidth),
+                      this.renderAtY + (yIndex * this.cellHeight),
+                      "" + value,
                       { fontFamily: '"Roboto Condensed"', fontSize: "16px" });
-      });  
+      });
     });
 
-    this.add.text(32, 32, this.gameText.text(TextTerm.Level) +" "+this.level.name, { fontFamily: '"Roboto Condensed"', fontSize: "16px" }), 
+    this.add.text(32, 32, this.gameText.text(TextTerm.Level) + " " + this.level.name,
+                  { fontFamily: '"Roboto Condensed"', fontSize: "16px" }),
 
-    this.tiles = adder.group({
-      key: 'tiles',
-      frame: [ this.whiteFrame ],
-      frameQuantity: this.level.height * this.level.width
-    });
+      this.tiles = adder.group({
+        key: 'tiles',
+        frame: [this.whiteFrame],
+        frameQuantity: this.level.height * this.level.width
+      });
 
     Phaser.Actions.GridAlign(this.tiles.getChildren(), {
-        width: this.level.width,
-        height: this.level.height,
-        cellWidth: this.cellWidth,
-        cellHeight: this.cellHeight,
-        x: this.renderAtX,
-        y: this.renderAtY
+      width: this.level.width,
+      height: this.level.height,
+      cellWidth: this.cellWidth,
+      cellHeight: this.cellHeight,
+      x: this.renderAtX,
+      y: this.renderAtY
     });
 
     this.tiles.children.iterate(function (child: any) {
@@ -84,7 +84,7 @@ class LevelScene extends Phaser.Scene {
       child.setData("item", "tile")
       const tileX = Math.floor((child.x - this.renderAtX) / this.cellWidth)
       const tileY = Math.floor((child.y - this.renderAtY) / this.cellHeight)
-      const tilePosition = {x: tileX, y: tileY}
+      const tilePosition = { x: tileX, y: tileY }
       child.setData("position", tilePosition)
     }.bind(this));
 
@@ -92,24 +92,23 @@ class LevelScene extends Phaser.Scene {
   }
 
   onGameObjectDown(pointer: any, gameObject: any) {
-    if (gameObject.getData("item") == "tile") {
+    if (gameObject.getData("item") === "tile") {
       const position = gameObject.getData("position")
-      if (gameObject.frame.name == this.whiteFrame) {
+      if (gameObject.frame.name === this.whiteFrame) {
         gameObject.setFrame(this.blackFrame)
         this.currentMap[position.y][position.x] = 1
-      } else if (gameObject.frame.name == this.blackFrame) {
+      } else if (gameObject.frame.name === this.blackFrame) {
         gameObject.setFrame(this.crossFrame)
         this.currentMap[position.y][position.x] = 0
-      } else if (gameObject.frame.name == this.crossFrame) {
+      } else if (gameObject.frame.name === this.crossFrame) {
         gameObject.setFrame(this.whiteFrame)
         this.currentMap[position.y][position.x] = 0
       }
     }
   }
 
-  update ()
-  {
-    if (!this.completed && JSON.stringify(this.currentMap) == JSON.stringify(this.level.map)) {
+  update() {
+    if (!this.completed && JSON.stringify(this.currentMap) === JSON.stringify(this.level.map)) {
       this.completed = true
       this.events.emit("completed")
     }

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import {Level} from './Level';
+import { Level } from './Level';
 import LevelScene from './LevelScene';
-import {GameText, Language } from './GameText'
+import { GameText, Language } from './GameText'
 import LanguageSelectionScene from './LanguageSelectionScene';
 
 class MainScene extends Phaser.Scene {
@@ -43,8 +43,7 @@ class MainScene extends Phaser.Scene {
     this.gameText = new GameText(Language.GREEK)
   }
 
-  create ()
-  {
+  create() {
     this.languageSelectionScene = new LanguageSelectionScene()
     this.scene.add(this.languageSelectionScene.key, this.languageSelectionScene, true)
     this.onLanguageSelectedRegistered = false
@@ -67,15 +66,14 @@ class MainScene extends Phaser.Scene {
     this.scene.stop(this.languageSelectionScene.key)
     this.scene.remove(this.languageSelectionScene.key)
     this.languageSelectionScene.events.removeAllListeners("languageSelected")
-    
+
 
     this.currentLevelScene = new LevelScene(this.levels[0], this.gameText);
     this.scene.add(this.currentLevelScene.key, this.currentLevelScene, true);
     this.onCompleteRegistered = false;
   }
 
-  update ()
-  {
+  update() {
     if (!this.onLanguageSelectedRegistered && this.languageSelectionScene && this.languageSelectionScene.events) {
       this.languageSelectionScene.events.on("languageSelected", this.onLanguageSelected, this)
       this.onLanguageSelectedRegistered = true
@@ -84,7 +82,7 @@ class MainScene extends Phaser.Scene {
       this.currentLevelScene.events.on("completed", this.onLevelCompleted, this)
       this.onCompleteRegistered = true
     }
-    
+
   }
 }
 
