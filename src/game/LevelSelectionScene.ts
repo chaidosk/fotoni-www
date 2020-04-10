@@ -4,6 +4,7 @@ import { Level } from './Level';
 
 class LevelSelectionScene extends Phaser.Scene {
     levels: Level[]
+    completedLevels: string[]
     key: string
     pages: Level[][]
     currentOptions: Phaser.GameObjects.Text[]
@@ -11,7 +12,7 @@ class LevelSelectionScene extends Phaser.Scene {
     levelsPerScreen: integer
     levelsPerRow: integer
     updateOptions: boolean
-    constructor(levels: Level[]) {
+    constructor(levels: Level[], completedLevels: string[]) {
         super({ key: "LevelSelectionScene" })
         this.key = "LevelSelectionScene"
         this.levels = levels
@@ -21,6 +22,7 @@ class LevelSelectionScene extends Phaser.Scene {
         this.currentPage = 0
         this.currentOptions = []
         this.updateOptions = true
+        this.completedLevels = completedLevels
     }
 
     toChunks<T>(array: T[], perChunck: integer): T[][] {
@@ -76,6 +78,9 @@ class LevelSelectionScene extends Phaser.Scene {
             const levelText = this.add.text(128 + xRel, 128 + yRel,
                                             " " + level.name,
                                             { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
+            if (this.completedLevels.includes(level.name)) {
+                levelText.setStyle({ fontFamily: '"Robot Condensed"', fontSize: "64px", color: "#a11"})
+            }
             levelText.setInteractive()
             levelText.setData("item", "level")
             levelText.setData("level", level)

@@ -15,6 +15,9 @@ class MainScene extends Phaser.Scene {
   gameText: GameText
   languageSelected: boolean
   levels: Level[]
+  completedLevels: string[]
+  private readonly localStrorageLevelsCompletedKey = "fotoni-completedLevels-V0";
+
   constructor() {
     super('MainScene');
     Phaser.Scene.call(this);
@@ -23,6 +26,12 @@ class MainScene extends Phaser.Scene {
     this.onLanguageSelectedRegistered = false
     this.onLevelSelectedRegistered = false
     this.gameText = new GameText(Language.GREEK)
+    const fromLocalStorage = JSON.parse(localStorage.getItem(this.localStrorageLevelsCompletedKey))
+    if (fromLocalStorage) {
+      this.completedLevels = fromLocalStorage
+    } else {
+      this.completedLevels = []
+    }
   }
 
   preload() {
@@ -51,7 +60,10 @@ class MainScene extends Phaser.Scene {
     this.scene.remove(this.currentLevelScene.key);
     this.currentLevelScene.events.removeAllListeners("completed")
 
-    this.levelSelectionScene = new LevelSelectionScene(this.levels);
+    this.completedLevels.push(this.currentLevelScene.level.name)
+    localStorage.setItem(this.localStrorageLevelsCompletedKey, JSON.stringify(this.completedLevels));
+
+    this.levelSelectionScene = new LevelSelectionScene(this.levels, this.completedLevels);
     this.scene.add(this.levelSelectionScene.key, this.levelSelectionScene, true);
     this.onLevelSelectedRegistered = false;
   }
@@ -62,7 +74,7 @@ class MainScene extends Phaser.Scene {
     this.scene.remove(this.languageSelectionScene.key)
     this.languageSelectionScene.events.removeAllListeners("languageSelected")
 
-    this.levelSelectionScene = new LevelSelectionScene(this.levels);
+    this.levelSelectionScene = new LevelSelectionScene(this.levels, this.completedLevels);
     this.scene.add(this.levelSelectionScene.key, this.levelSelectionScene, true);
     this.onLevelSelectedRegistered = false;
   }
