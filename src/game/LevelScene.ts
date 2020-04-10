@@ -31,8 +31,8 @@ class LevelScene extends Phaser.Scene {
     this.cellWidth = 32
     this.load.spritesheet('tiles', 'assets/gridtiles.png',
                           { frameWidth: this.cellWidth, frameHeight: this.cellHeight });
-    this.renderAtX = (Math.ceil(this.level.width / 2) + 2) * this.cellWidth // Allow helping text + 2
-    this.renderAtY = (Math.ceil(this.level.height / 2) + 2) * this.cellHeight // Allow helping text + 2
+    this.renderAtX = (Math.ceil(this.level.width / 2)) * this.cellWidth // Allow helping text + 2
+    this.renderAtY = (Math.ceil(this.level.height / 2)) * this.cellHeight // Allow helping text + 2
     this.completed = false
   }
 
@@ -61,14 +61,18 @@ class LevelScene extends Phaser.Scene {
       });
     });
 
-    this.add.text(32, 32, this.gameText.text(TextTerm.Level) + " " + this.level.name,
-                  { fontFamily: '"Roboto Condensed"', fontSize: "16px" }),
+    this.add.text(8, 32, this.gameText.text(TextTerm.Level) + " " + this.level.name,
+                  { fontFamily: '"Roboto Condensed"', fontSize: "16px" })
+    const levelSelection = this.add.text(8, 8, this.gameText.text(TextTerm.LevelSelection),
+                                         { fontFamily: '"Roboto Condensed"', fontSize: "16px"})
+    levelSelection.setData("item", "levelSelection")
+    levelSelection.setInteractive()
 
-      this.tiles = adder.group({
-        key: 'tiles',
-        frame: [this.whiteFrame],
-        frameQuantity: this.level.height * this.level.width
-      });
+    this.tiles = adder.group({
+      key: 'tiles',
+      frame: [this.whiteFrame],
+      frameQuantity: this.level.height * this.level.width
+    });
 
     Phaser.Actions.GridAlign(this.tiles.getChildren(), {
       width: this.level.width,
@@ -104,6 +108,9 @@ class LevelScene extends Phaser.Scene {
         gameObject.setFrame(this.whiteFrame)
         this.currentMap[position.y][position.x] = 0
       }
+    }
+    if (gameObject.getData("item") === "levelSelection") {
+      this.events.emit("completed")
     }
   }
 

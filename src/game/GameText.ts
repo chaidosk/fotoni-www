@@ -1,5 +1,6 @@
 export enum TextTerm {
-    Level= "level"
+    Level= "level",
+    LevelSelection= "levelSelection"
 }
 
 export enum Language {
@@ -8,10 +9,12 @@ export enum Language {
 }
 
 const GREEK_TEXT: Map<string, string> = new Map([
-    [TextTerm.Level,"Πίστα"]
+    [TextTerm.Level,"Πίστα"],
+    [TextTerm.LevelSelection, "(Πίστες)"]
 ])
 const ENGLISH_TEXT: Map<string, string> = new Map([
-    [TextTerm.Level, "Level"]
+    [TextTerm.Level, "Level"],
+    [TextTerm.LevelSelection, "(Levels)"]
 ])
 
 export class GameText {

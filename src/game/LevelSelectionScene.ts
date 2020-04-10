@@ -16,7 +16,7 @@ class LevelSelectionScene extends Phaser.Scene {
         super({ key: "LevelSelectionScene" })
         this.key = "LevelSelectionScene"
         this.levels = levels
-        this.levelsPerScreen = 6
+        this.levelsPerScreen = 9
         this.levelsPerRow = 3
         this.pages = this.toChunks(this.levels, this.levelsPerScreen)
         this.currentPage = 0
@@ -48,20 +48,36 @@ class LevelSelectionScene extends Phaser.Scene {
     }
 
     create() {
-        const xPrevious = 128 + (this.levelsPerScreen % this.levelsPerRow) * 2 * 64 + 64
-        const yPrevious = 128 + Math.floor(this.levelsPerScreen / this.levelsPerRow) * 2 * 64 + 32
+        const xPreviousx5 = 64 + (this.levelsPerScreen % this.levelsPerRow) * 2 * 64
+        const yPreviousx5 = 64 + Math.floor(this.levelsPerScreen / this.levelsPerRow) * 2 * 64 + 32
+        const previousx5 = this.add.text(xPreviousx5, yPreviousx5,
+                                         "<<",
+                                         { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
+        previousx5.setData("item", "previousx5")
+        previousx5.setInteractive()
+        const xPrevious = xPreviousx5 + 96
+        const yPrevious = yPreviousx5
         const previous = this.add.text(xPrevious, yPrevious,
                                        "<",
                                        { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
         previous.setData("item", "previous")
         previous.setInteractive()
-        const xNext = xPrevious + 128
+
+        const xNext = xPrevious + 64
         const yNext = yPrevious
         const next = this.add.text(xNext, yNext,
                                    ">",
                                    { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
         next.setData("item", "next")
         next.setInteractive()
+
+        const xNextx5 = xNext + 64
+        const yNextx5 = yNext
+        const nextx5 = this.add.text(xNextx5, yNextx5,
+                                     ">>",
+                                     { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
+        nextx5.setData("item", "nextx5")
+        nextx5.setInteractive()
         this.input.on('gameobjectdown', this.onGameObjectDown, this);
     }
 
@@ -75,7 +91,7 @@ class LevelSelectionScene extends Phaser.Scene {
         this.pages[this.currentPage].forEach((level: Level, index: integer) => {
             const xRel = (index % this.levelsPerRow) * 2 * 64
             const yRel = Math.floor(index / this.levelsPerRow) * 2 * 64
-            const levelText = this.add.text(128 + xRel, 128 + yRel,
+            const levelText = this.add.text(64 + xRel, 64 + yRel,
                                             " " + level.name,
                                             { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
             if (this.completedLevels.includes(level.name)) {
@@ -101,6 +117,18 @@ class LevelSelectionScene extends Phaser.Scene {
             this.currentPage -= 1
             if (this.currentPage < 0) {
                 this.currentPage = this.pages.length - 1
+            }
+            this.updateOptions = true
+        }
+        if (gameObject.getData("item") === "nextx5") {
+            this.currentPage += 5
+            this.currentPage = this.currentPage % this.pages.length
+            this.updateOptions = true
+        }
+        if (gameObject.getData("item") === "previousx5") {
+            this.currentPage -= 5
+            if (this.currentPage < 0) {
+                this.currentPage = (this.pages.length + this.currentPage) % this.pages.length
             }
             this.updateOptions = true
         }
