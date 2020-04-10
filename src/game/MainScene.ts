@@ -23,57 +23,27 @@ class MainScene extends Phaser.Scene {
     this.onLanguageSelectedRegistered = false
     this.onLevelSelectedRegistered = false
     this.gameText = new GameText(Language.GREEK)
+  }
 
-    this.levels =  [
-      new Level("1", [
-          [0, 1, 1, 0],
-          [1, 0, 0, 1],
-          [1, 0, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-      new Level("2", [
-          [1, 1, 1, 0],
-          [1, 0, 0, 1],
-          [0, 1, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-      new Level("3", [
-          [0, 1, 1, 0],
-          [1, 0, 1, 1],
-          [1, 1, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-      new Level("4", [
-          [0, 1, 1, 0],
-          [1, 0, 0, 1],
-          [1, 0, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-      new Level("5", [
-          [1, 1, 1, 0],
-          [1, 0, 0, 1],
-          [0, 1, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-      new Level("1", [
-          [0, 1, 1, 0],
-          [1, 0, 1, 1],
-          [1, 1, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-      new Level("7", [
-          [0, 1, 1, 0],
-          [1, 0, 1, 1],
-          [1, 1, 0, 1],
-          [0, 1, 1, 0]
-      ]),
-    ];
+  preload() {
+    this.load.json('levels', 'assets/levels.json');
   }
 
   create() {
     this.languageSelectionScene = new LanguageSelectionScene()
     this.scene.add(this.languageSelectionScene.key, this.languageSelectionScene, true)
     this.onLanguageSelectedRegistered = false
+
+    const levelsJson = this.cache.json.get('levels');
+    this.levels = this.createLevels(levelsJson)
+  }
+
+  createLevels(levelsJson: any): Level[] {
+    const levels: Level[] = []
+    Object.keys(levelsJson).forEach(levelName => {
+      levels.push(new Level(levelName, levelsJson[levelName]))
+    });
+    return levels
   }
 
   onLevelCompleted() {
