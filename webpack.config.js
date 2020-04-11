@@ -4,7 +4,7 @@ const webpack = require("webpack");
 module.exports = {
   mode: process.env.NODE_ENV === "production" ? "production" : "development",
   devtool: "inline-source-map",
-  entry: "./src/index.tsx",
+  entry: "./src/index.ts",
   output: {
     path: __dirname + "/dist",
     filename: "bundle.js",
