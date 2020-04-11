@@ -45,7 +45,7 @@ class LevelScene extends Phaser.Scene {
     const adder: any = this.add
 
     this.level.aboveHelper.forEach((element, xIndex) => {
-      element.reverse().forEach((value, yIndex) => {
+      [].concat(element).reverse().forEach((value, yIndex) => {
         this.add.text(this.renderAtX + (xIndex * this.cellWidth),
                       this.renderAtY - ((yIndex + 1) * this.cellHeight),
                       "" + value,
@@ -53,7 +53,7 @@ class LevelScene extends Phaser.Scene {
       });
     });
     this.level.sideHelper.forEach((element, yIndex) => {
-      element.reverse().forEach((value, xIndex) => {
+      [].concat(element).reverse().forEach((value, xIndex) => {
         this.add.text(this.renderAtX - ((xIndex + 1) * this.cellWidth),
                       this.renderAtY + (yIndex * this.cellHeight),
                       "" + value,
