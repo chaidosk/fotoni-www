@@ -11,6 +11,8 @@ class LevelScene extends Phaser.Scene {
   blackFrame: integer
   whiteFrame: integer
   crossFrame: integer
+  menuFrame: integer
+  clearAllFrame: integer
   cellWidth: integer
   cellHeight: integer
   renderAtX: integer
@@ -24,12 +26,14 @@ class LevelScene extends Phaser.Scene {
   }
 
   preload() {
-    this.whiteFrame = 41
-    this.blackFrame = 14
-    this.crossFrame = 98
+    this.whiteFrame = 0
+    this.blackFrame = 1
+    this.menuFrame = 2
+    this.crossFrame = 4
+    this.clearAllFrame = 7
     this.cellHeight = 32
     this.cellWidth = 32
-    this.load.spritesheet('tiles', 'assets/gridtiles.png',
+    this.load.spritesheet('tiles', 'assets/tiles.png',
                           { frameWidth: this.cellWidth, frameHeight: this.cellHeight });
     this.renderAtX = 3 * 32 + 24
     this.renderAtY = 3 * 32 + 24
@@ -37,10 +41,6 @@ class LevelScene extends Phaser.Scene {
   }
 
   create() {
-    this.currentMap = []
-    this.level.map.forEach(element => {
-      this.currentMap.push(Array(this.level.width).fill(0))
-    });
     // for typescript linting
     const adder: any = this.add
 
@@ -61,12 +61,15 @@ class LevelScene extends Phaser.Scene {
       });
     });
 
-    this.add.text(8, 32, this.gameText.text(TextTerm.Level) + " " + this.level.name,
+    this.add.text(8, 8, this.gameText.text(TextTerm.Level) + " " + this.level.name,
                   { fontFamily: '"Roboto Condensed"', fontSize: "16px" })
-    const levelSelection = this.add.text(8, 8, this.gameText.text(TextTerm.LevelSelection),
-                                         { fontFamily: '"Roboto Condensed"', fontSize: "16px"})
+    const levelSelection =this.add.sprite(24, 48, "tiles", this.menuFrame)
     levelSelection.setData("item", "levelSelection")
     levelSelection.setInteractive()
+
+    const clearAll =this.add.sprite(64, 48, "tiles", this.clearAllFrame)
+    clearAll.setData("item", "clearAll")
+    clearAll.setInteractive()
 
     this.tiles = adder.group({
       key: 'tiles',
@@ -90,9 +93,21 @@ class LevelScene extends Phaser.Scene {
       const tileY = Math.floor((child.y - this.renderAtY) / this.cellHeight)
       const tilePosition = { x: tileX, y: tileY }
       child.setData("position", tilePosition)
-    }.bind(this));
+    }.bind(this))
+
+    this.clearMap()
 
     this.input.on('gameobjectdown', this.onGameObjectDown, this);
+  }
+
+  clearMap() {
+    this.currentMap = []
+    this.level.map.forEach(element => {
+      this.currentMap.push(Array(this.level.width).fill(0))
+    });
+    this.tiles.children.iterate(function (child: any) {
+      child.setFrame(this.whiteFrame)
+    }.bind(this))
   }
 
   onGameObjectDown(pointer: any, gameObject: any) {
@@ -111,6 +126,9 @@ class LevelScene extends Phaser.Scene {
     }
     if (gameObject.getData("item") === "levelSelection") {
       this.events.emit("completed")
+    }
+    if (gameObject.getData("item") === "clearAll") {
+      this.clearMap()
     }
   }
 
