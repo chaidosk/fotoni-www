@@ -10,13 +10,13 @@ class LanguageSelectionScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.svg('GB', 'assets/GB.svg', { width: 300, height: 200 })
-        this.load.svg('GR', 'assets/GR.svg', { width: 300, height: 200 })
+        this.load.svg('GB', 'assets/GB.svg', { width: 150, height: 100 })
+        this.load.svg('GR', 'assets/GR.svg', { width: 150, height: 100 })
     }
 
     create() {
-        const gb = this.add.image(200, 150, 'GB');
-        const gr = this.add.image(550, 150, 'GR');
+        const gb = this.add.image(80 + 75, 240,'GB');
+        const gr = this.add.image(80 + 150 + 20 + 75, 240, 'GR');
 
         gb.setData("language", Language.ENGLISH)
         gr.setData("language", Language.GREEK)

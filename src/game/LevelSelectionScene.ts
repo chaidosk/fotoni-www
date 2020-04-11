@@ -48,14 +48,14 @@ class LevelSelectionScene extends Phaser.Scene {
     }
 
     create() {
-        const xPreviousx5 = 64 + (this.levelsPerScreen % this.levelsPerRow) * 2 * 64
-        const yPreviousx5 = 64 + Math.floor(this.levelsPerScreen / this.levelsPerRow) * 2 * 64 + 32
+        const xPreviousx5 = 32 + (this.levelsPerScreen % this.levelsPerRow) * 3 * 32
+        const yPreviousx5 = 64 + Math.floor(this.levelsPerScreen / this.levelsPerRow) * 3 * 32
         const previousx5 = this.add.text(xPreviousx5, yPreviousx5,
                                          "<<",
                                          { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
         previousx5.setData("item", "previousx5")
         previousx5.setInteractive()
-        const xPrevious = xPreviousx5 + 96
+        const xPrevious = xPreviousx5 + 128
         const yPrevious = yPreviousx5
         const previous = this.add.text(xPrevious, yPrevious,
                                        "<",
@@ -63,7 +63,7 @@ class LevelSelectionScene extends Phaser.Scene {
         previous.setData("item", "previous")
         previous.setInteractive()
 
-        const xNext = xPrevious + 64
+        const xNext = xPrevious + 96
         const yNext = yPrevious
         const next = this.add.text(xNext, yNext,
                                    ">",
@@ -71,7 +71,7 @@ class LevelSelectionScene extends Phaser.Scene {
         next.setData("item", "next")
         next.setInteractive()
 
-        const xNextx5 = xNext + 64
+        const xNextx5 = xNext + 96
         const yNextx5 = yNext
         const nextx5 = this.add.text(xNextx5, yNextx5,
                                      ">>",
@@ -89,9 +89,9 @@ class LevelSelectionScene extends Phaser.Scene {
         });
         this.currentOptions = []
         this.pages[this.currentPage].forEach((level: Level, index: integer) => {
-            const xRel = (index % this.levelsPerRow) * 2 * 64
-            const yRel = Math.floor(index / this.levelsPerRow) * 2 * 64
-            const levelText = this.add.text(64 + xRel, 64 + yRel,
+            const xRel = (index % this.levelsPerRow) * 5 * 32
+            const yRel = Math.floor(index / this.levelsPerRow) * 3 * 32
+            const levelText = this.add.text(16 + xRel, 32 + yRel,
                                             " " + level.name,
                                             { fontFamily: '"Roboto Condensed"', fontSize: "64px" })
             if (this.completedLevels.includes(level.name)) {

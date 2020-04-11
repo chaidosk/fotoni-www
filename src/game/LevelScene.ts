@@ -31,8 +31,8 @@ class LevelScene extends Phaser.Scene {
     this.cellWidth = 32
     this.load.spritesheet('tiles', 'assets/gridtiles.png',
                           { frameWidth: this.cellWidth, frameHeight: this.cellHeight });
-    this.renderAtX = (Math.ceil(this.level.width / 2)) * this.cellWidth // Allow helping text + 2
-    this.renderAtY = (Math.ceil(this.level.height / 2)) * this.cellHeight // Allow helping text + 2
+    this.renderAtX = 3 * 32 + 24
+    this.renderAtY = 3 * 32 + 24
     this.completed = false
   }
 
@@ -47,14 +47,14 @@ class LevelScene extends Phaser.Scene {
     this.level.aboveHelper.forEach((element, xIndex) => {
       [].concat(element).reverse().forEach((value, yIndex) => {
         this.add.text(this.renderAtX + (xIndex * this.cellWidth),
-                      this.renderAtY - ((yIndex + 1) * this.cellHeight),
+                      this.renderAtY - this.cellHeight - ((yIndex) * this.cellHeight / 2),
                       "" + value,
                       { fontFamily: '"Roboto Condensed"', fontSize: "16px" });
       });
     });
     this.level.sideHelper.forEach((element, yIndex) => {
       [].concat(element).reverse().forEach((value, xIndex) => {
-        this.add.text(this.renderAtX - ((xIndex + 1) * this.cellWidth),
+        this.add.text(this.renderAtX - this.cellWidth - (xIndex * this.cellWidth / 2),
                       this.renderAtY + (yIndex * this.cellHeight),
                       "" + value,
                       { fontFamily: '"Roboto Condensed"', fontSize: "16px" });
