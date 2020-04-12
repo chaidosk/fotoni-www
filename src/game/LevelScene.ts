@@ -88,9 +88,9 @@ class LevelScene extends Phaser.Scene {
     undo.setData("item", "undo")
     undo.setInteractive()
 
-    // const hint = this.add.sprite(64, 88, "tiles", this.hintFrame)
-    // hint.setData("item", "hint")
-    // hint.setInteractive()
+    const hint = this.add.sprite(64, 88, "tiles", this.hintFrame)
+    hint.setData("item", "hint")
+    hint.setInteractive()
 
     this.tiles = adder.group({
       key: 'tiles',
@@ -159,6 +159,22 @@ class LevelScene extends Phaser.Scene {
     }
   }
 
+  showHint() {
+    if (this.completed) {
+      return
+    }
+    let hintFound = false
+    while(!hintFound) {
+      const x: integer = Phaser.Math.Between(0, this.level.width - 1);
+      const y: integer = Phaser.Math.Between(0, this.level.height - 1);
+      if (this.level.map[y][x] !== this.currentMap[y][x]) {
+        hintFound = true
+        const tile = this.tilesMap.get(x +"#"+ y)
+        this.onGameObjectDown(null, tile)
+      }
+    }
+  }
+
   onGameObjectDown(pointer: any, gameObject: any) {
     if (gameObject.getData("item") === "tile") {
       this.switchTile(gameObject)
@@ -175,6 +191,9 @@ class LevelScene extends Phaser.Scene {
     if (gameObject.getData("item") === "undo") {
       this.levelEvents.pop()
       this.rerender()
+    }
+    if (gameObject.getData("item") === "hint") {
+      this.showHint()
     }
   }
 
