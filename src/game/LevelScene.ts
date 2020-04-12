@@ -170,7 +170,12 @@ class LevelScene extends Phaser.Scene {
       if (this.level.map[y][x] !== this.currentMap[y][x]) {
         hintFound = true
         const tile = this.tilesMap.get(x +"#"+ y)
+        // Handle the White -> Black and Black -> X
         this.onGameObjectDown(null, tile)
+        if (this.level.map[y][x] !== this.currentMap[y][x]) {
+          // Handle the X -> White -> Black
+          this.onGameObjectDown(null, tile)
+        }
       }
     }
   }
