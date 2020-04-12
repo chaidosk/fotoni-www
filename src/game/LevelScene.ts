@@ -1,17 +1,22 @@
-import Phaser from 'phaser';
-import { GameText, TextTerm } from './GameText';
+import Phaser, { GameObjects } from 'phaser';
+import { GameText, TextTerm, Language } from './GameText';
 import { Level } from './Level';
+import { LevelEvent, LevelEventType } from './LevelEvent';
 
 class LevelScene extends Phaser.Scene {
   tiles: Phaser.GameObjects.Group
+  tilesMap: Map<string, any>
   level: Level
   key: string
   gameText: GameText
   currentMap: integer[][]
+  levelEvents: LevelEvent[]
   blackFrame: integer
   whiteFrame: integer
   crossFrame: integer
   menuFrame: integer
+  undoFrame: integer
+  hintFrame: integer
   clearAllFrame: integer
   cellWidth: integer
   cellHeight: integer
@@ -23,6 +28,8 @@ class LevelScene extends Phaser.Scene {
     this.key = "level" + level.name
     this.level = level
     this.gameText = gameText
+    this.levelEvents = []
+    this.tilesMap = new Map()
   }
 
   preload() {
@@ -30,7 +37,13 @@ class LevelScene extends Phaser.Scene {
     this.blackFrame = 1
     this.menuFrame = 2
     this.crossFrame = 4
+    this.undoFrame = 5
     this.clearAllFrame = 7
+    if (this.gameText.language === Language.GREEK) {
+      this.hintFrame = 6
+    } else {
+      this.hintFrame = 3
+    }
     this.cellHeight = 32
     this.cellWidth = 32
     this.load.spritesheet('tiles', 'assets/tiles.png',
@@ -63,13 +76,21 @@ class LevelScene extends Phaser.Scene {
 
     this.add.text(8, 8, this.gameText.text(TextTerm.Level) + " " + this.level.name,
                   { fontFamily: '"Roboto Condensed"', fontSize: "16px" })
-    const levelSelection =this.add.sprite(24, 48, "tiles", this.menuFrame)
+    const levelSelection = this.add.sprite(24, 48, "tiles", this.menuFrame)
     levelSelection.setData("item", "levelSelection")
     levelSelection.setInteractive()
 
-    const clearAll =this.add.sprite(64, 48, "tiles", this.clearAllFrame)
+    const clearAll = this.add.sprite(64, 48, "tiles", this.clearAllFrame)
     clearAll.setData("item", "clearAll")
     clearAll.setInteractive()
+
+    const undo = this.add.sprite(24, 88, "tiles", this.undoFrame)
+    undo.setData("item", "undo")
+    undo.setInteractive()
+
+    // const hint = this.add.sprite(64, 88, "tiles", this.hintFrame)
+    // hint.setData("item", "hint")
+    // hint.setInteractive()
 
     this.tiles = adder.group({
       key: 'tiles',
@@ -92,6 +113,7 @@ class LevelScene extends Phaser.Scene {
       const tileX = Math.floor((child.x - this.renderAtX) / this.cellWidth)
       const tileY = Math.floor((child.y - this.renderAtY) / this.cellHeight)
       const tilePosition = { x: tileX, y: tileY }
+      this.tilesMap.set(tileX + "#" + tileY, child)
       child.setData("position", tilePosition)
     }.bind(this))
 
@@ -110,25 +132,49 @@ class LevelScene extends Phaser.Scene {
     }.bind(this))
   }
 
+  rerender() {
+    this.clearMap()
+    this.levelEvents.forEach(levelEvent => {
+      if (levelEvent.type === LevelEventType.CLEAR_ALL) {
+        this.clearMap()
+      }
+      if (levelEvent.type === LevelEventType.TILE_CLICKED) {
+        const tile = this.tilesMap.get(levelEvent.tileX +"#"+ levelEvent.tileY)
+        this.switchTile(tile)
+      }
+    });
+  }
+
+  switchTile(gameObject: any) {
+    const position = gameObject.getData("position")
+    if (gameObject.frame.name === this.whiteFrame) {
+      gameObject.setFrame(this.blackFrame)
+      this.currentMap[position.y][position.x] = 1
+    } else if (gameObject.frame.name === this.blackFrame) {
+      gameObject.setFrame(this.crossFrame)
+      this.currentMap[position.y][position.x] = 0
+    } else if (gameObject.frame.name === this.crossFrame) {
+      gameObject.setFrame(this.whiteFrame)
+      this.currentMap[position.y][position.x] = 0
+    }
+  }
+
   onGameObjectDown(pointer: any, gameObject: any) {
     if (gameObject.getData("item") === "tile") {
+      this.switchTile(gameObject)
       const position = gameObject.getData("position")
-      if (gameObject.frame.name === this.whiteFrame) {
-        gameObject.setFrame(this.blackFrame)
-        this.currentMap[position.y][position.x] = 1
-      } else if (gameObject.frame.name === this.blackFrame) {
-        gameObject.setFrame(this.crossFrame)
-        this.currentMap[position.y][position.x] = 0
-      } else if (gameObject.frame.name === this.crossFrame) {
-        gameObject.setFrame(this.whiteFrame)
-        this.currentMap[position.y][position.x] = 0
-      }
+      this.levelEvents.push(LevelEvent.tileClicked(position.x, position.y))
     }
     if (gameObject.getData("item") === "levelSelection") {
       this.events.emit("completed")
     }
     if (gameObject.getData("item") === "clearAll") {
       this.clearMap()
+      this.levelEvents.push(LevelEvent.clearAll())
+    }
+    if (gameObject.getData("item") === "undo") {
+      this.levelEvents.pop()
+      this.rerender()
     }
   }
 
