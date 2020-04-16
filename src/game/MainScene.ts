@@ -16,7 +16,7 @@ class MainScene extends Phaser.Scene {
   languageSelected: boolean
   levels: Level[]
   completedLevels: string[]
-  private readonly localStrorageLevelsCompletedKey = "fotoni-completedLevels-V1";
+  private readonly localStrorageLevelsCompletedKey = "fotoni-completedLevels-V2";
 
   constructor() {
     super('MainScene');
