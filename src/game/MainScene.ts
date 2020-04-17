@@ -65,7 +65,8 @@ class MainScene extends Phaser.Scene {
       localStorage.setItem(this.localStrorageLevelsCompletedKey, JSON.stringify(this.completedLevels));
     }
 
-    this.levelSelectionScene = new LevelSelectionScene(this.levels, this.completedLevels);
+    this.levelSelectionScene = new LevelSelectionScene(this.levels, this.completedLevels,
+                                                       this.currentLevelScene.level.name);
     this.scene.add(this.levelSelectionScene.key, this.levelSelectionScene, true);
     this.onLevelSelectedRegistered = false;
   }
