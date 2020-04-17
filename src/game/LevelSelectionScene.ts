@@ -19,10 +19,20 @@ class LevelSelectionScene extends Phaser.Scene {
         this.levelsPerScreen = 9
         this.levelsPerRow = 3
         this.pages = this.toChunks(this.levels, this.levelsPerScreen)
-        this.currentPage = 0
+        this.completedLevels = completedLevels
+        this.currentPage = this.firstWithUncompleted(this.pages, this.completedLevels)
         this.currentOptions = []
         this.updateOptions = true
-        this.completedLevels = completedLevels
+    }
+
+    firstWithUncompleted(pages: Level[][], completedLevels: string[]) : integer {
+        for(let i = 0; i < pages.length; i++) {
+            const page = pages[i]
+            if (page.filter(level => !completedLevels.includes(level.name)).length > 0) {
+                return i
+            }
+        }
+        return 0
     }
 
     toChunks<T>(array: T[], perChunck: integer): T[][] {
